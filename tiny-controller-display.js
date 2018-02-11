@@ -68,12 +68,12 @@ window.addEventListener("gamepadconnected", function(e){
 function updatePad() {
 	window.requestAnimationFrame(updatePad);
 	context.clearRect(0,0,57,37);
-	context.drawImage(leftBumper,0,0);
-	context.drawImage(rightBumper,0,0);
+	context.drawImage(leftBumper,pad.buttons[4].value,pad.buttons[4].value);
+	context.drawImage(rightBumper,-pad.buttons[5].value,pad.buttons[5].value);
 	context.drawImage(faceplate,0,0);
-	context.drawImage(dpad,0,0);
-	context.drawImage(leftSticktop,0,0);
-	context.drawImage(rightSticktop,0,0);
+	context.drawImage(dpad,pad.buttons[15].value-pad.buttons[14].value,pad.buttons[13].value-pad.buttons[12].value);
+	context.drawImage(leftSticktop,2*pad.axes[0],2*pad.axes[1]);
+	context.drawImage(rightSticktop,2*pad.axes[2],2*pad.axes[3]);
 	context.drawImage(startButton,0,0);
 	context.drawImage(selectButton,0,0);
 	context.drawImage(bottomButton,0,0);
