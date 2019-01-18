@@ -1,3 +1,4 @@
+//by Giancarlo Saraceni
 var canvas = document.getElementById("controllerCanvas");
 var context = canvas.getContext("2d");
 
