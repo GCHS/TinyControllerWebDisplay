@@ -1,0 +1,4 @@
+# TinyControllerWebDisplay
+A joypad viewer for [OBS](https://obsproject.com). Add as a browser source.
+
+For anti-fingerprinting, the [Gamepad API](https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API) does not present any controllers until a button has been pressed. As such, TinyControllerWebDisplay will not show up until a button on a controller has been pressed. Once a button on a controller has been pressed, TinyControllerWebDisplay will display the state of that controller and only that controller until it is restarted. To display a specific controller number, append a fragment after the URL; `#0` at the end for the first controller, `#1` for the second, etc. If you would prefer something other than an Xbox One Elite pad, the image assets can be replaced, so long as the filenames are kept. However, the trigger arcs will need to be in the same place, and all moving components will still move in the same directions by the same amount.
