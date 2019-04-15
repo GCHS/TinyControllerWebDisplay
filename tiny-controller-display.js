@@ -1,7 +1,10 @@
 //by Giancarlo Saraceni
 var canvas = document.getElementById("controllerCanvas");
+var recoloredCanvas = document.getElementById("recoloredCanvas");
 var context = canvas.getContext("2d");
+var recoloredContext = recoloredCanvas.getContext("2d");
 canvas.onload = () => context.imageSmoothingEnabled = false;
+recoloredCanvas.onload = () => recoloredContext.imageSmoothingEnabled = false;
 
 var pad;
 var padIndex = parseInt((new URL(window.location.href)).hash.substring(1), 10);//URL.hash includes hash character
@@ -123,7 +126,6 @@ var isBlink = (navigator.userAgent.toLowerCase().indexOf("chrom") != -1);
 const width = 57, height = 37, triggerArcHeight = 15;
 
 window.addEventListener("gamepadconnected",  function(e){
-	console.log(e);
 	if(isNaN(padIndex)){
 		pad = e.gamepad;
 		padIndex = e.gamepad.index;
@@ -132,7 +134,7 @@ window.addEventListener("gamepadconnected",  function(e){
 	}
 	console.log("Displaying pad #"+padIndex);
 	if(usesPadAccent){
-		recolorImageOnLoad(controllerAccent, padAccentColor);
+		setRecoloredCanvasColor(padAccentColor);
 		controllerAccent.src = "sprites/" + padName + "/controller_accent.gif";
 	}
 	updatePad();
@@ -145,6 +147,7 @@ function updatePad(){
 
 	window.requestAnimationFrame(updatePad);
 	context.clearRect(0, 0, width, height);
+	recoloredContext.clearRect(0, 0, width, height);
 	
 	//bumpers
 	context.drawImage(leftBumper, pad.buttons[4].value, pad.buttons[4].value);
@@ -153,7 +156,7 @@ function updatePad(){
 	//controller body
 	context.drawImage(faceplate, 0, 0);
 	if(usesPadAccent){
-		context.drawImage(controllerAccent, 0, 0);
+		recoloredContext.drawImage(controllerAccent, 0, 0);
 	}
 	
 	//dpad
@@ -194,24 +197,10 @@ function updatePad(){
 		0, triggerArcHeight*pad.buttons[7].value, width, height-triggerArcHeight*pad.buttons[7].value);//display rectangle
 }
 
-function recolorImageOnLoad(image, color){
-	image.onload = () => {
-		//CPU image manipulation. I love JavaScript. (Would breaking out WebGL just to recolor an image be too much?)
-		context.clearRect(0, 0, image.width, image.height);
-		context.drawImage(image, 0, 0);
-		let drawnImageData = context.getImageData(0, 0, image.width, image.height);
-		const r = 0, g = 1, b = 2, a = 3;
-		for(pixel = 0; pixel < drawnImageData.data.length; pixel += 4){
-			if(drawnImageData.data[pixel+a]){//skip fully transparent pixels
-				//multiply filter. Not gamma correct.
-				drawnImageData.data[pixel+r] = (drawnImageData.data[pixel+r] * color[r]);
-				drawnImageData.data[pixel+g] = (drawnImageData.data[pixel+g] * color[g]);
-				drawnImageData.data[pixel+b] = (drawnImageData.data[pixel+b] * color[b]);
-				drawnImageData.data[pixel+a] = (drawnImageData.data[pixel+a] * color[a]);
-			}
-		}
-		context.putImageData(drawnImageData, 0, 0);
-		image.onload = null;
-		image.src = canvas.toDataURL();
-	}
+function setRecoloredCanvasColor(color){
+	let multiplicand = document.getElementById("multiplyMatrix");
+	let multiplyColorMatrix = color[0]+" 0 0 0 0 0 "+color[1]+" 0 0 0 0 0 "+color[2]+" 0 0 0 0 0 "+color[3]+" 0";//multiply filter. Not gamma correct.
+	multiplicand.setAttribute("values", multiplyColorMatrix);
+
+	recoloredCanvas.className = "multiplicand";
 }

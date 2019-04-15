@@ -8,7 +8,15 @@
 	</head>
 
 	<body>
-		<canvas id="controllerCanvas" width="57" height="37"></canvas>
+		<div id="canvasContainer">
+			<canvas id="controllerCanvas" width="57" height="37"></canvas>
+			<canvas id="recoloredCanvas" width="57" height="37">
+					<svg><filter id="multiply" color-interpolation-filters="sRGB">
+						<!-- default filter is identity -->
+						<feColorMatrix id="multiplyMatrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"></feColorMatrix>
+					</filter></svg>
+			</canvas>
+		</div>
 		<script type="text/javascript" src="tiny-controller-display.js"></script>
 	</body>
 </html>
