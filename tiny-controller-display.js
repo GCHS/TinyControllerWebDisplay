@@ -15,6 +15,7 @@ if(!Number.isSafeInteger(padIndex)){
 let padName = "xb1_elite";
 let padAccentColor = [0xD3/255,0xD3/255,0xD3/255,0xFF/255];//default guide button light intensity on elite art
 let usesPadAccent = true;
+let isPad = true, bumpersUp = false, isHitbox = false;
 {
 	let urlParams = new URLSearchParams(window.location.search);
 	let requestedPad = urlParams.get("type");
@@ -27,6 +28,17 @@ let usesPadAccent = true;
 			case "ds4_rev2":
 				padName = "ds4_rev2";
 				padAccentColor = [0/255, 55/255, 145/255, 255/255];//default DS4 lightbar color
+				break;
+			case "fightstick":
+			case "fight_stick":
+			case "arcadestick":
+			case "arcade_stick":
+				padName = "fightstick";
+				padAccentColor=[1,1,1,1];//white
+				isPad = false;
+				if(urlParams.get("bumpers_up")=="true"){
+					bumpersUp = true;
+				}
 				break;
 			default:
 				//leave it on xb1_elite
@@ -59,64 +71,71 @@ let usesPadAccent = true;
 				padAccentColor[3] = shortcodeCorrectionCoefficient*a/255;
 			}	
 		}
+		setRecoloredCanvasColor(padAccentColor);
 	}
 }
 
 let bottomButton = new Image();
-bottomButton.src = "sprites/" + padName + "/bottom_button.gif";
-
 let controllerAccent = new Image();
-
 let dpad = new Image();
-dpad.src = "sprites/" + padName + "/dpad.gif";
-
 let faceplate = new Image();
-faceplate.src = "sprites/" + padName + "/faceplate.gif";
-
 let leftBumper = new Image();
-leftBumper.src = "sprites/" + padName + "/left_bumper.gif";
-
 let leftButton = new Image();
-leftButton.src = "sprites/" + padName + "/left_button.gif";
-
 let leftSticktop = new Image();
-leftSticktop.src = "sprites/" + padName + "/left_sticktop.gif";
-
 let leftSticktopPressed = new Image();
-leftSticktopPressed.src = "sprites/" + padName + "/left_sticktop_pressed.gif";
-
 let leftStickwellPressed = new Image();
-leftStickwellPressed.src = "sprites/" + padName + "/left_stickwell_pressed.gif";
-
 let leftTrigger = new Image();
-leftTrigger.src = "sprites/" + padName + "/left_trigger.gif";
-
 let rightBumper = new Image();
-rightBumper.src = "sprites/" + padName + "/right_bumper.gif";
-
 let rightButton = new Image();
-rightButton.src = "sprites/" + padName + "/right_button.gif";
-
 let rightSticktop = new Image();
-rightSticktop.src = "sprites/" + padName + "/right_sticktop.gif";
-
 let rightSticktopPressed = new Image();
-rightSticktopPressed.src = "sprites/" + padName + "/right_sticktop_pressed.gif";
-
 let rightStickwellPressed = new Image();
-rightStickwellPressed.src = "sprites/" + padName + "/right_stickwell_pressed.gif";
-
 let rightTrigger = new Image();
-rightTrigger.src = "sprites/" + padName + "/right_trigger.gif";
-
 let selectButton = new Image();
-selectButton.src = "sprites/" + padName + "/select_button.gif";
-
 let startButton = new Image();
-startButton.src = "sprites/" + padName + "/start_button.gif";
-
 let topButton = new Image();
-topButton.src = "sprites/" + padName + "/top_button.gif";
+
+if(isPad){
+	bottomButton.src = "sprites/" + padName + "/bottom_button.gif";
+	controllerAccent.src = "sprites/" + padName + "/controller_accent.gif";
+	dpad.src = "sprites/" + padName + "/dpad.gif";
+	faceplate.src = "sprites/" + padName + "/faceplate.gif";
+	leftBumper.src = "sprites/" + padName + "/left_bumper.gif";
+	leftButton.src = "sprites/" + padName + "/left_button.gif";
+	leftSticktop.src = "sprites/" + padName + "/left_sticktop.gif";
+	leftSticktopPressed.src = "sprites/" + padName + "/left_sticktop_pressed.gif";
+	leftStickwellPressed.src = "sprites/" + padName + "/left_stickwell_pressed.gif";
+	leftTrigger.src = "sprites/" + padName + "/left_trigger.gif";
+	rightBumper.src = "sprites/" + padName + "/right_bumper.gif";
+	rightButton.src = "sprites/" + padName + "/right_button.gif";
+	rightSticktop.src = "sprites/" + padName + "/right_sticktop.gif";
+	rightSticktopPressed.src = "sprites/" + padName + "/right_sticktop_pressed.gif";
+	rightStickwellPressed.src = "sprites/" + padName + "/right_stickwell_pressed.gif";
+	rightTrigger.src = "sprites/" + padName + "/right_trigger.gif";
+	selectButton.src = "sprites/" + padName + "/select_button.gif";
+	startButton.src = "sprites/" + padName + "/start_button.gif";
+	topButton.src = "sprites/" + padName + "/top_button.gif";
+}else{//is fightstick or hitbox
+	bottomButton.src = "sprites/" + padName + "/k1.gif";
+	dpad.src = "sprites/" + padName + "/stick.gif";
+	faceplate.src = "sprites/" + padName + "/faceplate.gif";
+	leftButton.src = "sprites/" + padName + "/p1.gif";
+	rightButton.src = "sprites/" + padName + "/k2.gif";
+	selectButton.src = "sprites/" + padName + "/select_button.gif";
+	startButton.src = "sprites/" + padName + "/start_button.gif";
+	topButton.src = "sprites/" + padName + "/p2.gif";
+	if(bumpersUp){
+		leftBumper.src = "sprites/" + padName + "/p4.gif";
+		leftTrigger.src = "sprites/" + padName + "/k4.gif";
+		rightBumper.src = "sprites/" + padName + "/p3.gif";
+		rightTrigger.src = "sprites/" + padName + "/k3.gif";
+	}else{
+		leftBumper.src = "sprites/" + padName + "/p3.gif";
+		leftTrigger.src = "sprites/" + padName + "/p4.gif";
+		rightBumper.src = "sprites/" + padName + "/k3.gif";
+		rightTrigger.src = "sprites/" + padName + "/k4.gif";
+	}
+}
 
 let isBlink = (navigator.userAgent.toLowerCase().indexOf("chrom") != -1);
 
@@ -130,10 +149,6 @@ window.addEventListener("gamepadconnected",  function(e){
 		pad = navigator.getGamepads()[padIndex];
 	}
 	console.log("Displaying pad #"+padIndex);
-	if(usesPadAccent){
-		setRecoloredCanvasColor(padAccentColor);
-		controllerAccent.src = "sprites/" + padName + "/controller_accent.gif";
-	}
 	updatePad();
 });
 
@@ -146,28 +161,46 @@ function updatePad(){
 	context.clearRect(0, 0, width, height);
 	recoloredContext.clearRect(0, 0, width, height);
 	
-	//bumpers
-	context.drawImage(leftBumper, pad.buttons[4].value, pad.buttons[4].value);
-	context.drawImage(rightBumper, -pad.buttons[5].value, pad.buttons[5].value);
+	//pad bumpers (drawn under body)
+	if(isPad){
+		context.drawImage(leftBumper, pad.buttons[4].value, pad.buttons[4].value);
+		context.drawImage(rightBumper, -pad.buttons[5].value, pad.buttons[5].value);
+	}
 	
 	//controller body
 	context.drawImage(faceplate, 0, 0);
 	if(usesPadAccent){
 		recoloredContext.drawImage(controllerAccent, 0, 0);
 	}
+
+	//nonpad bumpers (drawn on top of body)
+	if(!isPad){
+		if(pad.buttons[4].pressed)
+			context.drawImage(leftBumper, 0, 0);
+		if(pad.buttons[5].pressed)
+			context.drawImage(rightBumper, 0, 0);
+	}
 	
 	//dpad
-	context.drawImage(dpad, pad.buttons[15].value-pad.buttons[14].value, pad.buttons[13].value-pad.buttons[12].value);
+	if(isHitbox){
+
+	}else{
+		context.drawImage(dpad, pad.buttons[15].value-pad.buttons[14].value, pad.buttons[13].value-pad.buttons[12].value);
+	}
 
 	//left stick
-	if(pad.buttons[10].pressed)
-		context.drawImage(leftStickwellPressed, 0, 0);
-	context.drawImage(pad.buttons[10].pressed?leftSticktopPressed:leftSticktop, 2*pad.axes[0], 2*pad.axes[1]);
+	if(isPad){
+		if(pad.buttons[10].pressed)
+			context.drawImage(leftStickwellPressed, 0, 0);
+		context.drawImage(pad.buttons[10].pressed?leftSticktopPressed:leftSticktop, 2*pad.axes[0], 2*pad.axes[1]);
+	}
 
 	//right stick
-	if(pad.buttons[11].pressed)
-		context.drawImage(rightStickwellPressed, 0, 0);
-	context.drawImage(pad.buttons[11].pressed?rightSticktopPressed:rightSticktop, 2*pad.axes[2], 2*pad.axes[3]);
+	if(isPad){
+		if(pad.buttons[11].pressed)
+			context.drawImage(rightStickwellPressed, 0, 0);
+		context.drawImage(pad.buttons[11].pressed?rightSticktopPressed:rightSticktop, 2*pad.axes[2], 2*pad.axes[3]);
+	}
 
 	//start/select
 	if(pad.buttons[9].pressed)
@@ -186,12 +219,19 @@ function updatePad(){
 		context.drawImage(topButton, 0, 0);
 	
 	//trigger arcs
-	context.drawImage(leftTrigger, 
-		0, triggerArcHeight*pad.buttons[6].value, width, height-triggerArcHeight*pad.buttons[6].value, //clip rectangle
-		0, triggerArcHeight*pad.buttons[6].value, width, height-triggerArcHeight*pad.buttons[6].value);//display rectangle
-	context.drawImage(rightTrigger, 
-		0, triggerArcHeight*pad.buttons[7].value, width, height-triggerArcHeight*pad.buttons[7].value, //clip rectangle
-		0, triggerArcHeight*pad.buttons[7].value, width, height-triggerArcHeight*pad.buttons[7].value);//display rectangle
+	if(isPad){
+		context.drawImage(leftTrigger, 
+			0, triggerArcHeight*pad.buttons[6].value, width, height-triggerArcHeight*pad.buttons[6].value, //clip rectangle
+			0, triggerArcHeight*pad.buttons[6].value, width, height-triggerArcHeight*pad.buttons[6].value);//display rectangle
+		context.drawImage(rightTrigger, 
+			0, triggerArcHeight*pad.buttons[7].value, width, height-triggerArcHeight*pad.buttons[7].value, //clip rectangle
+			0, triggerArcHeight*pad.buttons[7].value, width, height-triggerArcHeight*pad.buttons[7].value);//display rectangle
+	}else{
+		if(pad.buttons[6].pressed)
+			context.drawImage(leftTrigger, 0, 0);
+		if(pad.buttons[7].pressed)
+			context.drawImage(rightTrigger, 0, 0);
+	}
 }
 
 function setRecoloredCanvasColor(color){
