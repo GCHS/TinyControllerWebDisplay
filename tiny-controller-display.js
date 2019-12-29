@@ -209,7 +209,13 @@ function updatePad(){
 		if(pad.buttons[12].pressed)
 			context.drawImage(dpadUp, 0, 0);
 	}else{
-		context.drawImage(dpad, pad.buttons[15].value-pad.buttons[14].value, pad.buttons[13].value-pad.buttons[12].value);
+		let coeff = isPad?1:2;
+		let x = pad.buttons[15].value-pad.buttons[14].value;
+		let y = pad.buttons[13].value-pad.buttons[12].value;
+		if(x!=0 && y!=0){
+			coeff = 1;
+		}
+		context.drawImage(dpad, coeff*x, coeff*y);
 	}
 
 	//left stick
