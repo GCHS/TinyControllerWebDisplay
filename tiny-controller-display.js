@@ -1,10 +1,10 @@
 //by Giancarlo Saraceni
 let canvas = document.getElementById("controllerCanvas");
 let recoloredCanvas = document.getElementById("recoloredCanvas");
-let context = canvas.getContext("2d");
-let recoloredContext = recoloredCanvas.getContext("2d");
-canvas.onload = () => context.imageSmoothingEnabled = false;
-recoloredCanvas.onload = () => recoloredContext.imageSmoothingEnabled = false;
+let uncoloredCtx = canvas.getContext("2d");
+let recoloredCtx = recoloredCanvas.getContext("2d");
+canvas.onload = () => uncoloredCtx.imageSmoothingEnabled = false;
+recoloredCanvas.onload = () => recoloredCtx.imageSmoothingEnabled = false;
 
 let pad;
 let padIndex = parseInt((new URL(window.location.href)).hash.substring(1), 10);//URL.hash includes hash character
@@ -169,45 +169,47 @@ window.addEventListener("gamepadconnected",  function(e){
 	updatePad();
 });
 
+let buttonCtx = isPad?uncoloredCtx:recoloredCtx;
+
 function updatePad(){
 	if(isBlink){//Blink forces polling I guess
 		pad = navigator.getGamepads()[padIndex];
 	}
 
 	window.requestAnimationFrame(updatePad);
-	context.clearRect(0, 0, width, height);
-	recoloredContext.clearRect(0, 0, width, height);
+	uncoloredCtx.clearRect(0, 0, width, height);
+	recoloredCtx.clearRect(0, 0, width, height);
 	
 	//pad bumpers (drawn under body)
 	if(isPad){
-		context.drawImage(leftBumper, pad.buttons[4].value, pad.buttons[4].value);
-		context.drawImage(rightBumper, -pad.buttons[5].value, pad.buttons[5].value);
+		uncoloredCtx.drawImage(leftBumper, pad.buttons[4].value, pad.buttons[4].value);
+		uncoloredCtx.drawImage(rightBumper, -pad.buttons[5].value, pad.buttons[5].value);
 	}
 	
 	//controller body
-	context.drawImage(faceplate, 0, 0);
+	uncoloredCtx.drawImage(faceplate, 0, 0);
 	if(usesPadAccent){
-		recoloredContext.drawImage(controllerAccent, 0, 0);
+		recoloredCtx.drawImage(controllerAccent, 0, 0);
 	}
 
 	//nonpad bumpers (drawn on top of body)
 	if(!isPad){
 		if(pad.buttons[4].pressed)
-			context.drawImage(leftBumper, 0, 0);
+			buttonCtx.drawImage(leftBumper, 0, 0);
 		if(pad.buttons[5].pressed)
-			context.drawImage(rightBumper, 0, 0);
+			buttonCtx.drawImage(rightBumper, 0, 0);
 	}
 	
 	//dpad
 	if(isHitbox){
 		if(pad.buttons[13].pressed)
-			context.drawImage(dpadDown, 0, 0);
+			buttonCtx.drawImage(dpadDown, 0, 0);
 		if(pad.buttons[14].pressed)
-			context.drawImage(dpadLeft, 0, 0);
+			buttonCtx.drawImage(dpadLeft, 0, 0);
 		if(pad.buttons[15].pressed)
-			context.drawImage(dpadRight, 0, 0);
+			buttonCtx.drawImage(dpadRight, 0, 0);
 		if(pad.buttons[12].pressed)
-			context.drawImage(dpadUp, 0, 0);
+			buttonCtx.drawImage(dpadUp, 0, 0);
 	}else{
 		let coeff = isPad?1:2;
 		let x = pad.buttons[15].value-pad.buttons[14].value;
@@ -215,52 +217,52 @@ function updatePad(){
 		if(x!=0 && y!=0){
 			coeff = 1;
 		}
-		context.drawImage(dpad, coeff*x, coeff*y);
+		buttonCtx.drawImage(dpad, coeff*x, coeff*y);
 	}
 
 	//left stick
 	if(isPad){
 		if(pad.buttons[10].pressed)
-			context.drawImage(leftStickwellPressed, 0, 0);
-		context.drawImage(pad.buttons[10].pressed?leftSticktopPressed:leftSticktop, 2*pad.axes[0], 2*pad.axes[1]);
+			uncoloredCtx.drawImage(leftStickwellPressed, 0, 0);
+		uncoloredCtx.drawImage(pad.buttons[10].pressed?leftSticktopPressed:leftSticktop, 2*pad.axes[0], 2*pad.axes[1]);
 	}
 
 	//right stick
 	if(isPad){
 		if(pad.buttons[11].pressed)
-			context.drawImage(rightStickwellPressed, 0, 0);
-		context.drawImage(pad.buttons[11].pressed?rightSticktopPressed:rightSticktop, 2*pad.axes[2], 2*pad.axes[3]);
+			uncoloredCtx.drawImage(rightStickwellPressed, 0, 0);
+		uncoloredCtx.drawImage(pad.buttons[11].pressed?rightSticktopPressed:rightSticktop, 2*pad.axes[2], 2*pad.axes[3]);
 	}
 
 	//start/select
 	if(pad.buttons[9].pressed)
-		context.drawImage(startButton, 0, 0);
+		buttonCtx.drawImage(startButton, 0, 0);
 	if(pad.buttons[8].pressed)
-		context.drawImage(selectButton, 0, 0);
+		buttonCtx.drawImage(selectButton, 0, 0);
 
 	//face buttons
 	if(pad.buttons[0].pressed)
-		context.drawImage(bottomButton, 0, 0);
+		buttonCtx.drawImage(bottomButton, 0, 0);
 	if(pad.buttons[1].pressed)
-		context.drawImage(rightButton, 0, 0);
+		buttonCtx.drawImage(rightButton, 0, 0);
 	if(pad.buttons[2].pressed)
-		context.drawImage(leftButton, 0, 0);
+		buttonCtx.drawImage(leftButton, 0, 0);
 	if(pad.buttons[3].pressed)
-		context.drawImage(topButton, 0, 0);
+		buttonCtx.drawImage(topButton, 0, 0);
 	
 	//trigger arcs
 	if(isPad){
-		context.drawImage(leftTrigger, 
+		uncoloredCtx.drawImage(leftTrigger, 
 			0, triggerArcHeight*pad.buttons[6].value, width, height-triggerArcHeight*pad.buttons[6].value, //clip rectangle
 			0, triggerArcHeight*pad.buttons[6].value, width, height-triggerArcHeight*pad.buttons[6].value);//display rectangle
-		context.drawImage(rightTrigger, 
+		uncoloredCtx.drawImage(rightTrigger, 
 			0, triggerArcHeight*pad.buttons[7].value, width, height-triggerArcHeight*pad.buttons[7].value, //clip rectangle
 			0, triggerArcHeight*pad.buttons[7].value, width, height-triggerArcHeight*pad.buttons[7].value);//display rectangle
 	}else{
 		if(pad.buttons[6].pressed)
-			context.drawImage(leftTrigger, 0, 0);
+			buttonCtx.drawImage(leftTrigger, 0, 0);
 		if(pad.buttons[7].pressed)
-			context.drawImage(rightTrigger, 0, 0);
+			buttonCtx.drawImage(rightTrigger, 0, 0);
 	}
 }
 
