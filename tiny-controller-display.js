@@ -40,6 +40,13 @@ let isPad = true, bumpersUp = false, isHitbox = false;
 					bumpersUp = true;
 				}
 				break;
+			case "cheatbox":
+			case "hitbox":
+				padName = "hitbox";
+				padAccentColor=[1,1,1,1];//white
+				isPad = false;
+				bumpersUp = true;
+				isHitbox = true;
 			default:
 				//leave it on xb1_elite
 		}
@@ -78,6 +85,10 @@ let isPad = true, bumpersUp = false, isHitbox = false;
 let bottomButton = new Image();
 let controllerAccent = new Image();
 let dpad = new Image();
+let dpadDown = new Image();
+let dpadLeft = new Image();
+let dpadRight = new Image();
+let dpadUp = new Image();
 let faceplate = new Image();
 let leftBumper = new Image();
 let leftButton = new Image();
@@ -135,6 +146,12 @@ if(isPad){
 		rightBumper.src = "sprites/" + padName + "/k3.gif";
 		rightTrigger.src = "sprites/" + padName + "/k4.gif";
 	}
+	if(isHitbox){
+		dpadDown.src  = "sprites/" + padName + "/dpad_down.gif";
+		dpadLeft.src  = "sprites/" + padName + "/dpad_left.gif";
+		dpadRight.src = "sprites/" + padName + "/dpad_right.gif";
+		dpadUp.src    = "sprites/" + padName + "/dpad_up.gif";
+	}
 }
 
 let isBlink = (navigator.userAgent.toLowerCase().indexOf("chrom") != -1);
@@ -183,7 +200,14 @@ function updatePad(){
 	
 	//dpad
 	if(isHitbox){
-
+		if(pad.buttons[13].pressed)
+			context.drawImage(dpadDown, 0, 0);
+		if(pad.buttons[14].pressed)
+			context.drawImage(dpadLeft, 0, 0);
+		if(pad.buttons[15].pressed)
+			context.drawImage(dpadRight, 0, 0);
+		if(pad.buttons[12].pressed)
+			context.drawImage(dpadUp, 0, 0);
 	}else{
 		context.drawImage(dpad, pad.buttons[15].value-pad.buttons[14].value, pad.buttons[13].value-pad.buttons[12].value);
 	}
