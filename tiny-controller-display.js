@@ -201,23 +201,29 @@ function updatePad(){
 	}
 	
 	//dpad
-	if(isHitbox){
-		if(pad.buttons[13].pressed)
-			buttonCtx.drawImage(dpadDown, 0, 0);
-		if(pad.buttons[14].pressed)
-			buttonCtx.drawImage(dpadLeft, 0, 0);
-		if(pad.buttons[15].pressed)
-			buttonCtx.drawImage(dpadRight, 0, 0);
-		if(pad.buttons[12].pressed)
-			buttonCtx.drawImage(dpadUp, 0, 0);
-	}else{
-		let coeff = isPad?1:2;
+	{
 		let x = pad.buttons[15].value-pad.buttons[14].value;
 		let y = pad.buttons[13].value-pad.buttons[12].value;
-		if(x!=0 && y!=0){
-			coeff = 1;
+		if(!isPad){
+			x+=pad.axes[0]+pad.axes[2];
+			y+=pad.axes[1]+pad.axes[3];
 		}
-		buttonCtx.drawImage(dpad, coeff*x, coeff*y);
+		if(isHitbox){
+			if(x<0)
+				buttonCtx.drawImage(dpadLeft, 0, 0);
+			if(x>0)
+				buttonCtx.drawImage(dpadRight, 0, 0);
+			if(y>0)
+				buttonCtx.drawImage(dpadDown, 0, 0);
+			if(y<0)
+				buttonCtx.drawImage(dpadUp, 0, 0);
+		}else{
+			let coeff = isPad?1:2;
+			// if(x!=0 && y!=0){//octagonal gate
+			// 	coeff = 1;
+			// }
+			buttonCtx.drawImage(dpad, coeff*x, coeff*y);
+		}
 	}
 
 	//left stick
