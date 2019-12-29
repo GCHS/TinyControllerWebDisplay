@@ -1,20 +1,20 @@
 //by Giancarlo Saraceni
-var canvas = document.getElementById("controllerCanvas");
-var recoloredCanvas = document.getElementById("recoloredCanvas");
-var context = canvas.getContext("2d");
-var recoloredContext = recoloredCanvas.getContext("2d");
+let canvas = document.getElementById("controllerCanvas");
+let recoloredCanvas = document.getElementById("recoloredCanvas");
+let context = canvas.getContext("2d");
+let recoloredContext = recoloredCanvas.getContext("2d");
 canvas.onload = () => context.imageSmoothingEnabled = false;
 recoloredCanvas.onload = () => recoloredContext.imageSmoothingEnabled = false;
 
-var pad;
-var padIndex = parseInt((new URL(window.location.href)).hash.substring(1), 10);//URL.hash includes hash character
+let pad;
+let padIndex = parseInt((new URL(window.location.href)).hash.substring(1), 10);//URL.hash includes hash character
 if(!Number.isSafeInteger(padIndex)){
 	padIndex = NaN;
 }
 
-var padName = "xb1_elite";
-var padAccentColor = [0xD3/255,0xD3/255,0xD3/255,0xFF/255];//default guide button light intensity on elite art
-var usesPadAccent = true;
+let padName = "xb1_elite";
+let padAccentColor = [0xD3/255,0xD3/255,0xD3/255,0xFF/255];//default guide button light intensity on elite art
+let usesPadAccent = true;
 {
 	let urlParams = new URLSearchParams(window.location.search);
 	let requestedPad = urlParams.get("type");
@@ -62,66 +62,66 @@ var usesPadAccent = true;
 	}
 }
 
-var bottomButton = new Image();
+let bottomButton = new Image();
 bottomButton.src = "sprites/" + padName + "/bottom_button.gif";
 
-var controllerAccent = new Image();
+let controllerAccent = new Image();
 
-var dpad = new Image();
+let dpad = new Image();
 dpad.src = "sprites/" + padName + "/dpad.gif";
 
-var faceplate = new Image();
+let faceplate = new Image();
 faceplate.src = "sprites/" + padName + "/faceplate.gif";
 
-var leftBumper = new Image();
+let leftBumper = new Image();
 leftBumper.src = "sprites/" + padName + "/left_bumper.gif";
 
-var leftButton = new Image();
+let leftButton = new Image();
 leftButton.src = "sprites/" + padName + "/left_button.gif";
 
-var leftSticktop = new Image();
+let leftSticktop = new Image();
 leftSticktop.src = "sprites/" + padName + "/left_sticktop.gif";
 
-var leftSticktopPressed = new Image();
+let leftSticktopPressed = new Image();
 leftSticktopPressed.src = "sprites/" + padName + "/left_sticktop_pressed.gif";
 
-var leftStickwellPressed = new Image();
+let leftStickwellPressed = new Image();
 leftStickwellPressed.src = "sprites/" + padName + "/left_stickwell_pressed.gif";
 
-var leftTrigger = new Image();
+let leftTrigger = new Image();
 leftTrigger.src = "sprites/" + padName + "/left_trigger.gif";
 
-var rightTrigger = new Image();
+let rightTrigger = new Image();
 rightTrigger.src = "sprites/" + padName + "/right_trigger.gif";
 
-var rightBumper = new Image();
+let rightBumper = new Image();
 rightBumper.src = "sprites/" + padName + "/right_bumper.gif";
 
-var rightButton = new Image();
+let rightButton = new Image();
 rightButton.src = "sprites/" + padName + "/right_button.gif";
 
-var rightSticktop = new Image();
+let rightSticktop = new Image();
 rightSticktop.src = "sprites/" + padName + "/right_sticktop.gif";
 
-var rightSticktopPressed = new Image();
+let rightSticktopPressed = new Image();
 rightSticktopPressed.src = "sprites/" + padName + "/right_sticktop_pressed.gif";
 
-var rightStickwellPressed = new Image();
+let rightStickwellPressed = new Image();
 rightStickwellPressed.src = "sprites/" + padName + "/right_stickwell_pressed.gif";
 
-var rightTrigger = new Image();
+let rightTrigger = new Image();
 rightTrigger.src = "sprites/" + padName + "/right_trigger.gif";
 
-var selectButton = new Image();
+let selectButton = new Image();
 selectButton.src = "sprites/" + padName + "/select_button.gif";
 
-var startButton = new Image();
+let startButton = new Image();
 startButton.src = "sprites/" + padName + "/start_button.gif";
 
-var topButton = new Image();
+let topButton = new Image();
 topButton.src = "sprites/" + padName + "/top_button.gif";
 
-var isBlink = (navigator.userAgent.toLowerCase().indexOf("chrom") != -1);
+let isBlink = (navigator.userAgent.toLowerCase().indexOf("chrom") != -1);
 
 const width = 57, height = 37, triggerArcHeight = 15;
 
