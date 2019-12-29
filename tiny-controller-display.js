@@ -91,9 +91,6 @@ leftStickwellPressed.src = "sprites/" + padName + "/left_stickwell_pressed.gif";
 let leftTrigger = new Image();
 leftTrigger.src = "sprites/" + padName + "/left_trigger.gif";
 
-let rightTrigger = new Image();
-rightTrigger.src = "sprites/" + padName + "/right_trigger.gif";
-
 let rightBumper = new Image();
 rightBumper.src = "sprites/" + padName + "/right_bumper.gif";
 
