@@ -7,6 +7,8 @@ TinyControllerWebDisplay takes two optional URL parameters: `?color=F00&type=bar
 
 To display a DualShock 4 v2 instead of an Xbox One Elite pad, replace `bar` with `ps4`, `ds4`, `ds4_v2`, or `ds4_rev2`; eg `type=ds4`.
 
+To display a DualSense, use `type=dualsense`, `ds5`, or `ps5`.
+
 To display a fightstick, use `type=fightstick`, `fight_stick`, `arcadestick`, or `arcade_stick`. If your stick maps the shoulder bumpers to the top row of buttons, add `&bumpers_up=true` to the end of the URL.
 
 To display a hitbox, use `type=hitbox`.
