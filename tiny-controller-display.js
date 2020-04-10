@@ -22,6 +22,12 @@ let isPad = true, bumpersUp = false, isHitbox = false;
 	if(requestedPad){
 		requestedPad = requestedPad.toLocaleLowerCase();
 		switch(requestedPad){
+			case "ds5":
+			case "dualsense":
+			case "ps5":
+				padName="dualsense";
+				padAccentColor = [0/255, 89/255, 238/255, 255/255];//default Dualsense accent light color
+				break;
 			case "ps4":
 			case "ds4":
 			case "ds4_v2":
