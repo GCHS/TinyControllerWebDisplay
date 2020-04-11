@@ -164,16 +164,23 @@ let isBlink = (navigator.userAgent.toLowerCase().indexOf("chrom") != -1);
 
 const width = 57, height = 37, triggerArcHeight = 15;
 
-window.addEventListener("gamepadconnected",  function(e){
+function getLastTouchedPad(){
+	return navigator.getGamepads().reduce((latest, thisPad)=>latest.timestamp<thisPad.timestamp?thisPad:latest);
+}
+
+function boot(e){
 	if(isNaN(padIndex)){
-		pad = e.gamepad;
-		padIndex = e.gamepad.index;
+		pad = getLastTouchedPad();
+		padIndex = pad.index;
 	}else{
 		pad = navigator.getGamepads()[padIndex];
 	}
 	console.log("Displaying pad #"+padIndex);
 	updatePad();
-});
+	window.removeEventListener("gamepadconnected", boot);
+}
+
+window.addEventListener("gamepadconnected", boot);
 
 let buttonCtx = isPad?uncoloredCtx:recoloredCtx;
 
