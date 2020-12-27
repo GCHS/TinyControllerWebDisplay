@@ -165,7 +165,7 @@ let isBlink = (navigator.userAgent.toLowerCase().indexOf("chrom") != -1);
 const width = 57, height = 37, triggerArcHeight = 15;
 
 function getLastTouchedPad(){
-	return navigator.getGamepads().reduce((latest, thisPad)=>latest.timestamp<thisPad.timestamp?thisPad:latest);
+	return [...navigator.getGamepads()].filter(pad=>pad != null).reduce((lastTouched, i)=>lastTouched.timestamp < i.timestamp ? i : lastTouched);
 }
 
 function boot(e){
