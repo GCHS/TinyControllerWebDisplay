@@ -164,13 +164,32 @@ let isBlink = (navigator.userAgent.toLowerCase().indexOf("chrom") != -1);
 
 const width = 57, height = 37, triggerArcHeight = 15;
 
-function getLastTouchedPad(){
-	return [...navigator.getGamepads()].filter(pad=>pad != null).reduce((lastTouched, i)=>lastTouched.timestamp < i.timestamp ? i : lastTouched);
+function getNonNeutralPads(){
+	return [...navigator.getGamepads()].filter(p => p != null && (p.axes.filter(a => Math.abs(a) > 0.25).length || p.buttons.filter(b => b.value >= 0.125).length));
 }
 
 function boot(e){
 	if(isNaN(padIndex)){
-		pad = getLastTouchedPad();
+		/* Pad autoselection is designed this way because of Chrome.
+		 * For reasons I cannot fathom, Chrome's GamepadConnected event
+		 * passes in P1's pad (XInput UserID 0 on Windows),
+		 * instead of the pad that spawned the event.
+
+		 * The previous version of this feature
+		 * relied on the Gamepad.timestamp field.
+		 * However, when it spawns Gamepads,
+		 * Chrome sets every Gamepad's .timestamp to the same value,
+		 * the same .timestamp present
+		 * in the event passed into this function.
+
+		 * This renders it impossible to actually know which gamepad was connected.
+
+		 * Hence, a guess must be made.
+
+		 * Firefox's behavior in connecting gamepads is completely different,
+		 * and much kinder to this feature. Alas, OBS's Browser Source is Chrome.
+		*/
+		pad = getNonNeutralPads()[0];
 		padIndex = pad.index;
 	}else{
 		pad = navigator.getGamepads()[padIndex];
