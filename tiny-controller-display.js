@@ -134,7 +134,6 @@ if(isPad){
 	topButton.src = "sprites/" + padName + "/top_button.gif";
 }else{//is fightstick or hitbox
 	bottomButton.src = "sprites/" + padName + "/k1.gif";
-	dpad.src = "sprites/" + padName + "/stick.gif";
 	faceplate.src = "sprites/" + padName + "/faceplate.gif";
 	leftButton.src = "sprites/" + padName + "/p1.gif";
 	rightButton.src = "sprites/" + padName + "/k2.gif";
@@ -157,15 +156,18 @@ if(isPad){
 		dpadLeft.src  = "sprites/" + padName + "/dpad_left.gif";
 		dpadRight.src = "sprites/" + padName + "/dpad_right.gif";
 		dpadUp.src    = "sprites/" + padName + "/dpad_up.gif";
+	}else{
+		dpad.src = "sprites/" + padName + "/stick.gif";
 	}
 }
 
 let isBlink = (navigator.userAgent.toLowerCase().indexOf("chrom") != -1);
 
 const width = 57, height = 37, triggerArcHeight = 15;
+const axisDeadzone = 0.25, buttonDeadzone = 0.125;
 
 function getNonNeutralPads(){
-	return [...navigator.getGamepads()].filter(p => p != null && (p.axes.filter(a => Math.abs(a) > 0.25).length || p.buttons.filter(b => b.value >= 0.125).length));
+	return [...navigator.getGamepads()].filter(p => p != null && (p.axes.filter(a => Math.abs(a) > axisDeadzone).length || p.buttons.filter(b => b.value >= buttonDeadzone).length));
 }
 
 function boot(e){
@@ -237,8 +239,9 @@ function updatePad(){
 		let x = pad.buttons[15].value-pad.buttons[14].value;
 		let y = pad.buttons[13].value-pad.buttons[12].value;
 		if(!isPad){
-			x+=pad.axes[0]+pad.axes[2];
-			y+=pad.axes[1]+pad.axes[3];
+			let applyAxisDeadzone = axis => Math.abs(axis) >= axisDeadzone? axis : 0;
+			x+=applyAxisDeadzone(pad.axes[0])+applyAxisDeadzone(pad.axes[2]);
+			y+=applyAxisDeadzone(pad.axes[1])+applyAxisDeadzone(pad.axes[3]);
 		}
 		if(isHitbox){
 			if(x<0)
