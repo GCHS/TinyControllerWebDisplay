@@ -12,52 +12,118 @@ if(!Number.isSafeInteger(padIndex)){
 	padIndex = NaN;
 }
 
+//js, why do you not have enums (also #using namespaces or something I guess)
+const Pad = Symbol("pad");
+const Fightstick = Symbol("fightstick");
+const Hitbox = Symbol("hitbox");
+const Rectangle = Symbol("gram");
+
+let rectanglePointsTable = [];
+
 let padName = "xb1_elite";
 let padAccentColor = [0xD3/255,0xD3/255,0xD3/255,0xFF/255];//default guide button light intensity on elite art
-let usesPadAccent = true;
-let isPad = true, bumpersUp = false, isHitbox = false;
-{
+let controllerGeo = Pad;
+const isPad = () => {
+	return controllerGeo === Pad;
+};
+const hasStick = () => {
+	return !(controllerGeo === Hitbox || controllerGeo === Rectangle);
+}
+const shouldFuseDirectionalInputs = () => {
+	return controllerGeo === Fightstick || controllerGeo === Hitbox;
+}
+
+let bottomButton = new Image();
+let controllerAccent = new Image();
+let dirDown = new Image();
+let dirLeft = new Image();
+let dirRight = new Image();
+let dirUp = new Image();
+let dpad = new Image();
+let dToggle = new Image();
+let faceplate = new Image();
+let leftBumper = new Image();
+let leftButton = new Image();
+let leftSticktop = new Image();
+let leftSticktopPressed = new Image();
+let leftStickwellPressed = new Image();
+let leftTrigger = new Image();
+let rightBumper = new Image();
+let rightButton = new Image();
+let rightStickDown = new Image();
+let rightStickLeft = new Image();
+let rightStickRight = new Image();
+let rightSticktop = new Image();
+let rightStickUp = new Image();
+let rightSticktopPressed = new Image();
+let rightStickwellPressed = new Image();
+let rightTrigger = new Image();
+let rightTriggerLight = new Image();
+let rightTriggerMid = new Image();
+let selectButton = new Image();
+let startButton = new Image();
+let topButton = new Image();
+let modX = new Image();
+let modY = new Image();
+
+{//configure controller
 	let urlParams = new URLSearchParams(window.location.search);
-	let requestedPad = urlParams.get("type");
-	if(requestedPad){
-		requestedPad = requestedPad.toLocaleLowerCase();
-		switch(requestedPad){
-			case "ds5":
-			case "dualsense":
-			case "ps5":
-				padName="dualsense";
-				padAccentColor = [0/255, 89/255, 238/255, 255/255];//default Dualsense accent light color
-				break;
-			case "ps4":
-			case "ds4":
-			case "ds4_v2":
-			case "ds4_rev2":
-				padName = "ds4_rev2";
-				padAccentColor = [0/255, 55/255, 145/255, 255/255];//default DS4 lightbar color
-				break;
-			case "fightstick":
-			case "fight_stick":
-			case "arcadestick":
-			case "arcade_stick":
-				padName = "fightstick";
-				padAccentColor=[1,1,1,1];//white
-				isPad = false;
-				if(urlParams.get("bumpers_up")=="true"){
-					bumpersUp = true;
-				}
-				break;
-			case "cheatbox":
-			case "hitbox":
-				padName = "hitbox";
-				padAccentColor=[1,1,1,1];//white
-				isPad = false;
-				bumpersUp = true;
-				isHitbox = true;
-			default:
-				//leave it on xb1_elite
+	{//parse controller type
+		let requestedPad = urlParams.get("type");
+		if(requestedPad){
+			requestedPad = requestedPad.toLocaleLowerCase();
+			switch(requestedPad){
+				case "ds5":
+				case "dualsense":
+				case "ps5":
+					padName="dualsense";
+					padAccentColor = [0/255, 89/255, 238/255, 255/255];//default Dualsense accent light color
+					controllerGeo = Pad;
+					break;
+				case "ps4":
+				case "ds4":
+				case "ds4_v2":
+				case "ds4_rev2":
+					padName = "ds4_rev2";
+					padAccentColor = [0/255, 55/255, 145/255, 255/255];//default DS4 lightbar color
+					controllerGeo = Pad;
+					break;
+				case "fightstick":
+				case "fight_stick":
+				case "arcadestick":
+				case "arcade_stick":
+					padName = "fightstick";
+					padAccentColor = [1,1,1,1];//white
+					controllerGeo = Fightstick;
+					break;
+				case "cheatbox":
+				case "hitbox":
+				case "stickless":
+				case "slab":
+					padName = "hitbox";
+					padAccentColor = [1,1,1,1];//white
+					controllerGeo = Hitbox;
+					break;
+				case "rectangle":
+				case "boxx":
+				case "b0xx":
+				case "frame1":
+				case "gram":
+				case "smashbox":
+					padName = "rectangle";
+					padAccentColor = [1,1,1,1];//white
+					controllerGeo = Rectangle;
+					let getRectPoints = document.createElement("script");
+					getRectPoints.src = "Melee20Button.js";
+					document.body.appendChild(getRectPoints);
+					break;
+				default:
+					//leave it on xb1_elite
+			}
 		}
 	}
-	if(usesPadAccent){
+
+	{//parse accent color
 		let requestedColor = urlParams.get("color");
 		if(requestedColor){//parse hexcode color argument 
 			let r,g,b,a;
@@ -85,79 +151,97 @@ let isPad = true, bumpersUp = false, isHitbox = false;
 			}	
 		}
 		setRecoloredCanvasColor(padAccentColor);
+		
 	}
-}
 
-let bottomButton = new Image();
-let controllerAccent = new Image();
-let dpad = new Image();
-let dpadDown = new Image();
-let dpadLeft = new Image();
-let dpadRight = new Image();
-let dpadUp = new Image();
-let faceplate = new Image();
-let leftBumper = new Image();
-let leftButton = new Image();
-let leftSticktop = new Image();
-let leftSticktopPressed = new Image();
-let leftStickwellPressed = new Image();
-let leftTrigger = new Image();
-let rightBumper = new Image();
-let rightButton = new Image();
-let rightSticktop = new Image();
-let rightSticktopPressed = new Image();
-let rightStickwellPressed = new Image();
-let rightTrigger = new Image();
-let selectButton = new Image();
-let startButton = new Image();
-let topButton = new Image();
+	{//configure sprites
+		const spritePath = (btnName) => `sprites/${padName}/${btnName}.gif`;
 
-if(isPad){
-	bottomButton.src = "sprites/" + padName + "/bottom_button.gif";
-	controllerAccent.src = "sprites/" + padName + "/controller_accent.gif";
-	dpad.src = "sprites/" + padName + "/dpad.gif";
-	faceplate.src = "sprites/" + padName + "/faceplate.gif";
-	leftBumper.src = "sprites/" + padName + "/left_bumper.gif";
-	leftButton.src = "sprites/" + padName + "/left_button.gif";
-	leftSticktop.src = "sprites/" + padName + "/left_sticktop.gif";
-	leftSticktopPressed.src = "sprites/" + padName + "/left_sticktop_pressed.gif";
-	leftStickwellPressed.src = "sprites/" + padName + "/left_stickwell_pressed.gif";
-	leftTrigger.src = "sprites/" + padName + "/left_trigger.gif";
-	rightBumper.src = "sprites/" + padName + "/right_bumper.gif";
-	rightButton.src = "sprites/" + padName + "/right_button.gif";
-	rightSticktop.src = "sprites/" + padName + "/right_sticktop.gif";
-	rightSticktopPressed.src = "sprites/" + padName + "/right_sticktop_pressed.gif";
-	rightStickwellPressed.src = "sprites/" + padName + "/right_stickwell_pressed.gif";
-	rightTrigger.src = "sprites/" + padName + "/right_trigger.gif";
-	selectButton.src = "sprites/" + padName + "/select_button.gif";
-	startButton.src = "sprites/" + padName + "/start_button.gif";
-	topButton.src = "sprites/" + padName + "/top_button.gif";
-}else{//is fightstick or hitbox
-	bottomButton.src = "sprites/" + padName + "/k1.gif";
-	faceplate.src = "sprites/" + padName + "/faceplate.gif";
-	leftButton.src = "sprites/" + padName + "/p1.gif";
-	rightButton.src = "sprites/" + padName + "/k2.gif";
-	selectButton.src = "sprites/" + padName + "/select_button.gif";
-	startButton.src = "sprites/" + padName + "/start_button.gif";
-	topButton.src = "sprites/" + padName + "/p2.gif";
-	if(bumpersUp){
-		leftBumper.src = "sprites/" + padName + "/p4.gif";
-		leftTrigger.src = "sprites/" + padName + "/k4.gif";
-		rightBumper.src = "sprites/" + padName + "/p3.gif";
-		rightTrigger.src = "sprites/" + padName + "/k3.gif";
-	}else{
-		leftBumper.src = "sprites/" + padName + "/p3.gif";
-		leftTrigger.src = "sprites/" + padName + "/p4.gif";
-		rightBumper.src = "sprites/" + padName + "/k3.gif";
-		rightTrigger.src = "sprites/" + padName + "/k4.gif";
-	}
-	if(isHitbox){
-		dpadDown.src  = "sprites/" + padName + "/dpad_down.gif";
-		dpadLeft.src  = "sprites/" + padName + "/dpad_left.gif";
-		dpadRight.src = "sprites/" + padName + "/dpad_right.gif";
-		dpadUp.src    = "sprites/" + padName + "/dpad_up.gif";
-	}else{
-		dpad.src = "sprites/" + padName + "/stick.gif";
+		if(controllerGeo === Pad){
+			bottomButton.src          = spritePath("bottom_button");
+			controllerAccent.src      = spritePath("controller_accent");
+			dpad.src                  = spritePath("dpad");
+			faceplate.src             = spritePath("faceplate");
+			leftBumper.src            = spritePath("left_bumper");
+			leftButton.src            = spritePath("left_button");
+			leftSticktop.src          = spritePath("left_sticktop");
+			leftSticktopPressed.src   = spritePath("left_sticktop_pressed");
+			leftStickwellPressed.src  = spritePath("left_stickwell_pressed");
+			leftTrigger.src           = spritePath("left_trigger");
+			rightBumper.src           = spritePath("right_bumper");
+			rightButton.src           = spritePath("right_button");
+			rightSticktop.src         = spritePath("right_sticktop");
+			rightSticktopPressed.src  = spritePath("right_sticktop_pressed");
+			rightStickwellPressed.src = spritePath("right_stickwell_pressed");
+			rightTrigger.src          = spritePath("right_trigger");
+			selectButton.src          = spritePath("select_button");
+			startButton.src           = spritePath("start_button");
+			topButton.src             = spritePath("top_button");
+		}else if(controllerGeo === Rectangle){
+			faceplate.src    = urlParams.get("transparent") == "true"? spritePath("faceplate_transparent") : spritePath("faceplate");
+			
+			bottomButton.src = spritePath("a");
+			rightButton.src  = spritePath("b");
+			leftButton.src   = spritePath("x");
+			topButton.src    = spritePath("y");
+
+			rightStickDown.src   = spritePath("c_down");
+			rightStickLeft.src   = spritePath("c_left");
+			rightStickRight.src  = spritePath("c_right");
+			rightStickUp.src     = spritePath("c_up");
+
+			leftTrigger.src = spritePath("lt");
+
+			rightBumper.src = spritePath("z");
+
+			rightTrigger.src = spritePath("rt");
+			rightTriggerLight.src = spritePath("light_shield");
+			rightTriggerMid.src = spritePath("mid_shield");
+
+			startButton.src = spritePath("start");
+
+			
+			dirDown.src  = spritePath("down");
+			dirLeft.src  = spritePath("left");
+			dirRight.src = spritePath("right");
+
+			if(urlParams.get("wasd_mode") == "true" || urlParams.get("wasdmode") == "true"){
+				dirUp.src   = spritePath("d_toggle");
+				dToggle.src = spritePath("up");
+			}else{
+				dirUp.src   = spritePath("up");
+				dToggle.src = spritePath("d_toggle");
+			}
+			modX.src = spritePath("mod_x");
+			modY.src = spritePath("mod_y");
+		}else{//is fightstick or hitbox
+			bottomButton.src = spritePath("k1");
+			faceplate.src    = urlParams.get("transparent") == "true"? spritePath("faceplate_transparent") : spritePath("faceplate");
+			leftButton.src   = spritePath("p1");
+			rightButton.src  = spritePath("k2");
+			selectButton.src = spritePath("select_button");
+			startButton.src  = spritePath("start_button");
+			topButton.src    = spritePath("p2");
+			if(controllerGeo === Hitbox || urlParams.get("bumpers_up") == "true"){
+				leftBumper.src   = spritePath("p4");
+				leftTrigger.src  = spritePath("k4");
+				rightBumper.src  = spritePath("p3");
+				rightTrigger.src = spritePath("k3");
+			}else{
+				leftBumper.src   = spritePath("p3");
+				leftTrigger.src  = spritePath("p4");
+				rightBumper.src  = spritePath("k3");
+				rightTrigger.src = spritePath("k4");
+			}
+			if(controllerGeo === Hitbox){
+				dirDown.src  = spritePath("dpad_down");
+				dirLeft.src  = spritePath("dpad_left");
+				dirRight.src = spritePath("dpad_right");
+				dirUp.src    = spritePath("dpad_up");
+			}else{
+				dpad.src = spritePath("stick");
+			}
+		}
 	}
 }
 
@@ -169,6 +253,31 @@ const axisDeadzone = 0.25, buttonDeadzone = 0.125;
 function getNonNeutralPads(){
 	return [...navigator.getGamepads()].filter(p => p != null && (p.axes.filter(a => Math.abs(a) > axisDeadzone).length || p.buttons.filter(b => b.value >= buttonDeadzone).length));
 }
+
+//rectangle mod button detection
+const lxThreshes = Object.freeze([
+	{threshold:    100.0/32768, mod: null},
+	{threshold:  6_000.0/32768, mod: modY},
+	{threshold: 13_000.0/32768, mod: modX},
+	{threshold: 20_000.0/32768, mod: null},
+]);
+const lyThreshes = Object.freeze([
+	{threshold:    100.0/32768, mod: null},
+	{threshold: 10_000.0/32768, mod: modX},
+	{threshold: 15_000.0/32768, mod: modY},
+	{threshold: 20_000.0/32768, mod: null},
+]);
+const rxThreshes = Object.freeze([
+	{threshold:    100.0/32768, mod: null},
+	{threshold: 17_000.0/32768, mod: modX},
+	{threshold: 20_000.0/32768, mod: null},
+]);
+const ryThreshes = Object.freeze([
+	{threshold:    100.0/32768, mod: null},
+	{threshold: 20_000.0/32768, mod: null},
+]);
+
+
 
 function boot(e){
 	if(isNaN(padIndex)){
@@ -203,7 +312,7 @@ function boot(e){
 
 window.addEventListener("gamepadconnected", boot);
 
-let buttonCtx = isPad?uncoloredCtx:recoloredCtx;
+let buttonCtx = isPad()?uncoloredCtx:recoloredCtx;
 
 function updatePad(){
 	if(isBlink){//Blink forces polling I guess
@@ -215,84 +324,127 @@ function updatePad(){
 	recoloredCtx.clearRect(0, 0, width, height);
 	
 	//pad bumpers (drawn under body)
-	if(isPad){
+	if(isPad()){
 		uncoloredCtx.drawImage(leftBumper, pad.buttons[4].value, pad.buttons[4].value);
 		uncoloredCtx.drawImage(rightBumper, -pad.buttons[5].value, pad.buttons[5].value);
 	}
 	
 	//controller body
 	uncoloredCtx.drawImage(faceplate, 0, 0);
-	if(usesPadAccent){
-		recoloredCtx.drawImage(controllerAccent, 0, 0);
-	}
+	recoloredCtx.drawImage(controllerAccent, 0, 0);
 
 	//nonpad bumpers (drawn on top of body)
-	if(!isPad){
-		if(pad.buttons[4].pressed)
-			buttonCtx.drawImage(leftBumper, 0, 0);
-		if(pad.buttons[5].pressed)
-			buttonCtx.drawImage(rightBumper, 0, 0);
+	if(!isPad()){
+		if(pad.buttons[4].pressed) buttonCtx.drawImage(leftBumper, 0, 0);
+		if(pad.buttons[5].pressed) buttonCtx.drawImage(rightBumper, 0, 0);
 	}
 	
+	function applyAxisDeadzone(axis){return Math.abs(axis) >= axisDeadzone? axis : 0;}
 	//dpad
-	{
-		let x = pad.buttons[15].value-pad.buttons[14].value;
-		let y = pad.buttons[13].value-pad.buttons[12].value;
-		if(!isPad){
-			let applyAxisDeadzone = axis => Math.abs(axis) >= axisDeadzone? axis : 0;
-			x+=applyAxisDeadzone(pad.axes[0])+applyAxisDeadzone(pad.axes[2]);
-			y+=applyAxisDeadzone(pad.axes[1])+applyAxisDeadzone(pad.axes[3]);
-		}
-		if(isHitbox){
-			if(x<0)
-				buttonCtx.drawImage(dpadLeft, 0, 0);
-			if(x>0)
-				buttonCtx.drawImage(dpadRight, 0, 0);
-			if(y>0)
-				buttonCtx.drawImage(dpadDown, 0, 0);
-			if(y<0)
-				buttonCtx.drawImage(dpadUp, 0, 0);
+	if(controllerGeo !== Rectangle){
+		let lx = applyAxisDeadzone(pad.axes[0]);
+		let ly = applyAxisDeadzone(pad.axes[1]);
+		let rx = applyAxisDeadzone(pad.axes[2]);
+		let ry = applyAxisDeadzone(pad.axes[3]);
+
+		if(!hasStick()){//test and display all directional values separately for socd purposes
+			if(lx<0 || rx<0 || pad.buttons[14].pressed) buttonCtx.drawImage(dirLeft, 0, 0);
+			if(lx>0 || rx>0 || pad.buttons[15].pressed) buttonCtx.drawImage(dirRight, 0, 0);
+			if(ly>0 || ry>0 || pad.buttons[13].pressed) buttonCtx.drawImage(dirDown, 0, 0);
+			if(ly<0 || ry<0 || pad.buttons[12].pressed) buttonCtx.drawImage(dirUp, 0, 0);
+			console.log(lx);
 		}else{
-			let coeff = isPad?1:2;
+			let coeff = isPad()?1:2;
 			// if(x!=0 && y!=0){//octagonal gate
 			// 	coeff = 1;
 			// }
+			let x = pad.buttons[15].value-pad.buttons[14].value;
+			let y = pad.buttons[13].value-pad.buttons[12].value;
 			buttonCtx.drawImage(dpad, coeff*x, coeff*y);
 		}
 	}
 
 	//left stick
-	if(isPad){
+	if(isPad()){
 		if(pad.buttons[10].pressed)
 			uncoloredCtx.drawImage(leftStickwellPressed, 0, 0);
 		uncoloredCtx.drawImage(pad.buttons[10].pressed?leftSticktopPressed:leftSticktop, 2*pad.axes[0], 2*pad.axes[1]);
 	}
 
 	//right stick
-	if(isPad){
+	if(isPad()){
 		if(pad.buttons[11].pressed)
 			uncoloredCtx.drawImage(rightStickwellPressed, 0, 0);
 		uncoloredCtx.drawImage(pad.buttons[11].pressed?rightSticktopPressed:rightSticktop, 2*pad.axes[2], 2*pad.axes[3]);
 	}
 
+	//rectangle directional inputs
+	if(controllerGeo === Rectangle){
+		function findXInputValue(axisValue){
+			//the closest to being an integer is the farthest from being a half-integer
+			var shortside = Math.abs((Math.abs(axisValue) * 32767)%1.0 - 0.5);
+			var longside = Math.abs((Math.abs(axisValue) * 32768)%1.0 - 0.5);
+			if(shortside > longside){
+				return Math.round(axisValue * 32767);
+			}
+			return Math.round(axisValue * 32768);
+		}
+
+		function hayboxXInputToGCN(axis){
+			if(axis === 0) return 128; //untouched axes report 0 in Firefox...
+			return (axis - 128)/257 + 128;
+		}
+		let lx = hayboxXInputToGCN(findXInputValue( pad.axes[0]));
+		let ly = hayboxXInputToGCN(findXInputValue(-pad.axes[1]));
+		let rx = hayboxXInputToGCN(findXInputValue( pad.axes[2]));
+		let ry = hayboxXInputToGCN(findXInputValue(-pad.axes[3]));
+		
+		let comboIdx = ((lx*256+ly)*256+rx)*256+ry;
+
+		let inputs = rectanglePointsTable[comboIdx];
+		if(typeof inputs !== 'undefined'){//catches both an input not being in the table and the table itself not being loaded
+			if((inputs & InputLeft  ) === InputLeft  ) buttonCtx.drawImage(dirLeft,         0, 0);
+			if((inputs & InputRight ) === InputRight ) buttonCtx.drawImage(dirRight,        0, 0);
+			if((inputs & InputUp    ) === InputUp    ) buttonCtx.drawImage(dirUp,           0, 0)
+			if((inputs & InputDown  ) === InputDown  ) buttonCtx.drawImage(dirDown,         0, 0);
+			if((inputs & InputCLeft ) === InputCLeft ) buttonCtx.drawImage(rightStickLeft,  0, 0);
+			if((inputs & InputCRight) === InputCRight) buttonCtx.drawImage(rightStickRight, 0, 0);
+			if((inputs & InputCUp   ) === InputCUp   ) buttonCtx.drawImage(rightStickUp,    0, 0);
+			if((inputs & InputCDown ) === InputCDown ) buttonCtx.drawImage(rightStickDown,  0, 0);
+			if((inputs & InputModX  ) === InputModX  ) buttonCtx.drawImage(modX,            0, 0);
+			if((inputs & InputModY  ) === InputModY  ) buttonCtx.drawImage(modY,            0, 0);
+			if((inputs & InputShield) === InputShield) console.log("coordinate-based shield input...");
+			if((inputs & InputB     ) === InputB     ) console.log("coordinate-based b input...");
+		}else{
+			let lx = applyAxisDeadzone(pad.axes[0]);
+			let ly = applyAxisDeadzone(pad.axes[1]);
+			let rx = applyAxisDeadzone(pad.axes[2]);
+			let ry = applyAxisDeadzone(pad.axes[3]);
+
+			if(lx > 0) buttonCtx.drawImage(dirLeft, 0, 0);
+			if(lx < 0) buttonCtx.drawImage(dirRight, 0, 0);
+			if(ly > 0) buttonCtx.drawImage(dirDown, 0, 0);
+			if(ly < 0) buttonCtx.drawImage(dirUp, 0, 0);
+
+			if(rx > 0) buttonCtx.drawImage(rightStickLeft, 0, 0);
+			if(rx < 0) buttonCtx.drawImage(rightStickRight, 0, 0);
+			if(ry > 0) buttonCtx.drawImage(rightStickDown, 0, 0);
+			if(ry < 0) buttonCtx.drawImage(rightStickUp, 0, 0);
+		}
+	}
+
 	//start/select
-	if(pad.buttons[9].pressed)
-		buttonCtx.drawImage(startButton, 0, 0);
-	if(pad.buttons[8].pressed)
-		buttonCtx.drawImage(selectButton, 0, 0);
+	if(pad.buttons[9].pressed) buttonCtx.drawImage(startButton, 0, 0);
+	if(pad.buttons[8].pressed) buttonCtx.drawImage(selectButton, 0, 0);
 
 	//face buttons
-	if(pad.buttons[0].pressed)
-		buttonCtx.drawImage(bottomButton, 0, 0);
-	if(pad.buttons[1].pressed)
-		buttonCtx.drawImage(rightButton, 0, 0);
-	if(pad.buttons[2].pressed)
-		buttonCtx.drawImage(leftButton, 0, 0);
-	if(pad.buttons[3].pressed)
-		buttonCtx.drawImage(topButton, 0, 0);
+	if(pad.buttons[0].pressed) buttonCtx.drawImage(bottomButton, 0, 0);
+	if(pad.buttons[1].pressed) buttonCtx.drawImage(rightButton, 0, 0);
+	if(pad.buttons[2].pressed) buttonCtx.drawImage(leftButton, 0, 0);
+	if(pad.buttons[3].pressed) buttonCtx.drawImage(topButton, 0, 0);
 	
 	//trigger arcs
-	if(isPad){
+	if(isPad()){
 		uncoloredCtx.drawImage(leftTrigger, 
 			0, triggerArcHeight*pad.buttons[6].value, width, height-triggerArcHeight*pad.buttons[6].value, //clip rectangle
 			0, triggerArcHeight*pad.buttons[6].value, width, height-triggerArcHeight*pad.buttons[6].value);//display rectangle
@@ -302,8 +454,18 @@ function updatePad(){
 	}else{
 		if(pad.buttons[6].pressed)
 			buttonCtx.drawImage(leftTrigger, 0, 0);
-		if(pad.buttons[7].pressed)
+		
+		if(controllerGeo === Rectangle){
+			if(pad.buttons[7].value >= 140/255){
+				buttonCtx.drawImage(rightTrigger, 0, 0);
+			}else if(pad.buttons[7].value >= 94/255){
+				buttonCtx.drawImage(rightTriggerMid, 0, 0);
+			}else if(pad.buttons[7].value >= 49/255){
+				buttonCtx.drawImage(rightTriggerLight, 0, 0);
+			}
+		}else if(pad.buttons[7].pressed){
 			buttonCtx.drawImage(rightTrigger, 0, 0);
+		}
 	}
 }
 
