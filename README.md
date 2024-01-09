@@ -15,4 +15,6 @@ To display a hitbox, use `type=hitbox`, `stickless`, or `slab`.
 
 To display a Smash rectangle, use `type=rectangle`, `b0xx`, `frame1`, `gram`, or `smashbox`. Please note that this input viewer is based upon the [20-button  Melee input mode available in this fork of Haybox](https://github.com/UMS-Ultra/BubbleBox-Firmware/blob/master/src/modes/Melee20Button.cpp); if you are using a different input mode, the mod buttons may not display correctly. (Support for additional input modes coming soon...) For WASD mode, append `&wasd_mode=true` to the end of the URL.
 
+For fightstick, hitbox, or rectangle displays, append `&transparent=true` to the URL to have a transparent background.
+
 To change the color of the light on the pad displays or the buttons and sticktop on the stick/box displays, replace `F00` with a different [hexcode](https://www.codeconquest.com/hex-color-codes/). TCWD understands `RGB`, `RGBA`, `RRGGBB`, and `RRGGBBAA` color formats.
