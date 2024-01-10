@@ -380,8 +380,10 @@ function updatePad(){
 
 	//rectangle directional inputs
 	if(controllerGeo === Rectangle){
-		function findXInputValue(axisValue){
-			//the closest to being an integer is the farthest from being a half-integer
+		function findXInputValue(axisValue){//the closest to being an integer is the farthest from being a half-integer
+			//this function works in Firefox but is usually off by one in Chrome
+			//I don't really know why and maybe I'll figure it out some day
+			//but that day is not today.
 			var shortside = Math.abs((Math.abs(axisValue) * 32767)%1.0 - 0.5);
 			var longside = Math.abs((Math.abs(axisValue) * 32768)%1.0 - 0.5);
 			if(shortside > longside){
@@ -392,7 +394,10 @@ function updatePad(){
 
 		function hayboxXInputToGCN(axis){
 			if(axis === 0) return 128; //untouched axes report 0 in Firefox...
-			return (axis - 128)/257 + 128;
+			return Math.round((axis - 128)/257) + 128;
+			//this^ extra rounding is here b/c of a difference in behavior
+			//between Firefox and Chrome causing findXInputValue to usually be
+			//off by one in Chrome. Augh.
 		}
 		let lx = hayboxXInputToGCN(findXInputValue( pad.axes[0]));
 		let ly = hayboxXInputToGCN(findXInputValue(-pad.axes[1]));
