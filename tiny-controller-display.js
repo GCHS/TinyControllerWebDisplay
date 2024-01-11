@@ -406,6 +406,15 @@ function updatePad(){
 				}
 			}
 
+			{//dpad layer
+				let dpadPressed = false;
+				if(pad.buttons[14].pressed) {dpadPressed = true; buttonCtx.drawImage(rightStickLeft , 0, 0);}
+				if(pad.buttons[15].pressed) {dpadPressed = true; buttonCtx.drawImage(rightStickRight, 0, 0);}
+				if(pad.buttons[13].pressed) {dpadPressed = true; buttonCtx.drawImage(rightStickDown , 0, 0);}
+				if(pad.buttons[12].pressed) {dpadPressed = true; buttonCtx.drawImage(rightStickUp   , 0, 0);}
+				if(dpadPressed) {input |= (InputModX | InputModY);}
+			}
+
 			if((input & InputLeft  ) === InputLeft  ) buttonCtx.drawImage(dirLeft,         0, 0);
 			if((input & InputRight ) === InputRight ) buttonCtx.drawImage(dirRight,        0, 0);
 			if((input & InputUp    ) === InputUp    ) buttonCtx.drawImage(dirUp,           0, 0)
@@ -418,7 +427,7 @@ function updatePad(){
 			if((input & InputModY  ) === InputModY  ) buttonCtx.drawImage(modY,            0, 0);
 			if((input & InputShield) === InputShield) console.log("coordinate-based shield input...");
 			if((input & InputB     ) === InputB     ) console.log("coordinate-based b input...");
-			
+
 			lastRectangleInput = input;
 		}else{
 			let lx = applyAxisDeadzone(pad.axes[0]);
