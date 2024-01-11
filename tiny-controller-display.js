@@ -254,29 +254,7 @@ function getNonNeutralPads(){
 	return [...navigator.getGamepads()].filter(p => p != null && (p.axes.filter(a => Math.abs(a) > axisDeadzone).length || p.buttons.filter(b => b.value >= buttonDeadzone).length));
 }
 
-//rectangle mod button detection
-const lxThreshes = Object.freeze([
-	{threshold:    100.0/32768, mod: null},
-	{threshold:  6_000.0/32768, mod: modY},
-	{threshold: 13_000.0/32768, mod: modX},
-	{threshold: 20_000.0/32768, mod: null},
-]);
-const lyThreshes = Object.freeze([
-	{threshold:    100.0/32768, mod: null},
-	{threshold: 10_000.0/32768, mod: modX},
-	{threshold: 15_000.0/32768, mod: modY},
-	{threshold: 20_000.0/32768, mod: null},
-]);
-const rxThreshes = Object.freeze([
-	{threshold:    100.0/32768, mod: null},
-	{threshold: 17_000.0/32768, mod: modX},
-	{threshold: 20_000.0/32768, mod: null},
-]);
-const ryThreshes = Object.freeze([
-	{threshold:    100.0/32768, mod: null},
-	{threshold: 20_000.0/32768, mod: null},
-]);
-
+let lastRectangleInput = 0;
 
 
 function boot(e){
@@ -392,6 +370,15 @@ function updatePad(){
 			return Math.round(axisValue * 32768);
 		}
 
+		function popcount(a){
+			let count = 0;
+			for(let i = 0; i<32; i++){
+				if((1<<i)&a)
+					count++;
+			}
+			return count;
+		}
+
 		function hayboxXInputToGCN(axis){
 			if(axis === 0) return 128; //untouched axes report 0 in Firefox...
 			return Math.round((axis - 128)/257) + 128;
@@ -404,22 +391,35 @@ function updatePad(){
 		let rx = hayboxXInputToGCN(findXInputValue( pad.axes[2]));
 		let ry = hayboxXInputToGCN(findXInputValue(-pad.axes[3]));
 		
-		let comboIdx = ((lx*256+ly)*256+rx)*256+ry;
-
+		let comboIdx = (((lx * 256 + ly) * 256 + rx) * 256) + ry; //we need positive indices in here
 		let inputs = rectanglePointsTable[comboIdx];
+
 		if(typeof inputs !== 'undefined'){//catches both an input not being in the table and the table itself not being loaded
-			if((inputs & InputLeft  ) === InputLeft  ) buttonCtx.drawImage(dirLeft,         0, 0);
-			if((inputs & InputRight ) === InputRight ) buttonCtx.drawImage(dirRight,        0, 0);
-			if((inputs & InputUp    ) === InputUp    ) buttonCtx.drawImage(dirUp,           0, 0)
-			if((inputs & InputDown  ) === InputDown  ) buttonCtx.drawImage(dirDown,         0, 0);
-			if((inputs & InputCLeft ) === InputCLeft ) buttonCtx.drawImage(rightStickLeft,  0, 0);
-			if((inputs & InputCRight) === InputCRight) buttonCtx.drawImage(rightStickRight, 0, 0);
-			if((inputs & InputCUp   ) === InputCUp   ) buttonCtx.drawImage(rightStickUp,    0, 0);
-			if((inputs & InputCDown ) === InputCDown ) buttonCtx.drawImage(rightStickDown,  0, 0);
-			if((inputs & InputModX  ) === InputModX  ) buttonCtx.drawImage(modX,            0, 0);
-			if((inputs & InputModY  ) === InputModY  ) buttonCtx.drawImage(modY,            0, 0);
-			if((inputs & InputShield) === InputShield) console.log("coordinate-based shield input...");
-			if((inputs & InputB     ) === InputB     ) console.log("coordinate-based b input...");
+			let length = inputs.length;
+			let input = inputs[0];
+			let diffPop = popcount(input^lastRectangleInput);
+			for(let i = 1; i<length; i++){
+				let testPop = popcount(inputs[i]^lastRectangleInput);
+				if(testPop < diffPop){
+					input = inputs[i];
+					diffPop = testPop;
+				}
+			}
+
+			if((input & InputLeft  ) === InputLeft  ) buttonCtx.drawImage(dirLeft,         0, 0);
+			if((input & InputRight ) === InputRight ) buttonCtx.drawImage(dirRight,        0, 0);
+			if((input & InputUp    ) === InputUp    ) buttonCtx.drawImage(dirUp,           0, 0)
+			if((input & InputDown  ) === InputDown  ) buttonCtx.drawImage(dirDown,         0, 0);
+			if((input & InputCLeft ) === InputCLeft ) buttonCtx.drawImage(rightStickLeft,  0, 0);
+			if((input & InputCRight) === InputCRight) buttonCtx.drawImage(rightStickRight, 0, 0);
+			if((input & InputCUp   ) === InputCUp   ) buttonCtx.drawImage(rightStickUp,    0, 0);
+			if((input & InputCDown ) === InputCDown ) buttonCtx.drawImage(rightStickDown,  0, 0);
+			if((input & InputModX  ) === InputModX  ) buttonCtx.drawImage(modX,            0, 0);
+			if((input & InputModY  ) === InputModY  ) buttonCtx.drawImage(modY,            0, 0);
+			if((input & InputShield) === InputShield) console.log("coordinate-based shield input...");
+			if((input & InputB     ) === InputB     ) console.log("coordinate-based b input...");
+			
+			lastRectangleInput = input;
 		}else{
 			let lx = applyAxisDeadzone(pad.axes[0]);
 			let ly = applyAxisDeadzone(pad.axes[1]);
