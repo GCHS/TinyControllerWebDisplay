@@ -11,7 +11,7 @@ To display a DualSense, use `type=dualsense`, `ds5`, or `ps5`.
 
 To display a fightstick, use `type=fightstick`, `fight_stick`, `arcadestick`, or `arcade_stick`. If your stick maps the shoulder bumpers to the top row of buttons, add `&bumpers_up=true` to the end of the URL.
 
-To display a hitbox, use `type=hitbox`, `stickless`, or `slab`.
+To display a hitbox, use `type=hitbox`, `leverless`, `stickless`, or `slab`.
 
 To display a Smash rectangle, use `type=rectangle`, `b0xx`, `frame1`, `gram`, or `smashbox`. Please note that this input viewer is based upon the [20-button  Melee input mode available in this fork of Haybox](https://github.com/UMS-Ultra/BubbleBox-Firmware/blob/master/src/modes/Melee20Button.cpp); if you are using a different input mode, the mod buttons may not display correctly. (Support for additional input modes coming soon...) For WASD mode, append `&wasd_mode=true` to the end of the URL.
 

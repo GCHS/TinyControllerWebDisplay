@@ -98,6 +98,7 @@ let modY = new Image();
 					break;
 				case "cheatbox":
 				case "hitbox":
+				case "leverless":
 				case "stickless":
 				case "slab":
 					padName = "hitbox";
